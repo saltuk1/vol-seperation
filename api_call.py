@@ -10,10 +10,6 @@ ticker = 'GOOGL'
 start_date_str = '2024-03-01'
 end_date_str = '2024-05-30'
 
-# --- Rate Limiting Configuration ---
-CALLS_PER_MINUTE = 5
-SLEEP_DURATION = (60 / CALLS_PER_MINUTE) + 0.1
-
 output_csv_filename = f"{ticker}_daily_data_{start_date_str}_to_{end_date_str}.csv"
 
 all_data_for_csv = []
