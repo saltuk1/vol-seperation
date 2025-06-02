@@ -1,4 +1,5 @@
 import pandas as pd
+import math
 
 class Volatilty():
 
@@ -11,8 +12,10 @@ class Volatilty():
         self.close = close
         self.high = high
         self.low = low
+        self.mean = self.close.mean()
+        self.tradingdays = len(self.close)
+    
+    def calculate_std_deviation(self):
+        return self.close.std()
 
-
-    def calculate_mean(self):
-        
-        return self.close.mean()
+    

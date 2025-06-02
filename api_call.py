@@ -5,7 +5,7 @@ from polygon.exceptions import BadResponse
 from datetime import date, timedelta, datetime
 import pandas as pd
 
-client = RESTClient("flAcFuvYhLgjSRPblks2_lXXvTi5ALjk") # Replace with your actual API key
+client = RESTClient("KEY") # Replace with your actual API key
 
 ticker = 'GOOG'
 start_date_str = '2024-03-01'
