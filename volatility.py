@@ -17,6 +17,8 @@ class Volatility():
     
     def calculate_std_deviation(self):
         
+        # Using log returns to apply the CLT for returns, since raw returns are left-skewed
+        
         logreturns = np.log(self.close / self.close.shift(1))
         daily_vol = logreturns.rolling(window=self.window).std()
         annualized_std = daily_vol * np.sqrt(self.annualizefactor)
@@ -38,7 +40,18 @@ class Volatility():
 
         return annualized_parkinson_vol
 
+    def calculate_vol_garmanklaas(self):
 
+        log_squared_oc_ratio = (np.log(self.close / self.open))**2
+        log_squared_hl_ratio = (np.log(self.high / self.low))**2
+        garmanklaas_constat = 2 * np.log(2) - 1
 
+        daily_garmanklaas_proxy = 0.5 * log_squared_hl_ratio - garmanklaas_constat * log_squared_oc_ratio
+        daily_garmanklaas_proxy = daily_garmanklaas_proxy.clip(lower=0) # Capped at 0 since variance can't be negative
 
-    
+        rolling_garmanklaas_vol_squared = daily_garmanklaas_proxy.rolling(window = self.window).mean()
+        daily_garmanklaas_vol = np.sqrt(rolling_garmanklaas_vol_squared)
+        
+        annualized_garmanklaas_vol = daily_garmanklaas_vol * np.sqrt(self.annualizefactor)
+
+        return annualized_garmanklaas_vol
