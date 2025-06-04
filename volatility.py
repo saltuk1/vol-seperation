@@ -5,7 +5,6 @@ import math
 class Volatility():
 
     def __init__(self, ticker : str, open : pd.Series, close : pd.Series , high : pd.Series , low : pd.Series, window:int, annualizefactor:int):
-        # Arguments passed as pd.Series
 
         self.ticker = ticker
         self.open = open
@@ -25,11 +24,19 @@ class Volatility():
 
     def calculate_vol_parkinson(self):
 
-        high_low_ratio = np.log(self.high / self.low)
-        parkinson_factor = 1 / (4 * np.log(2))
-        parkinson_vol = np.sqrt(parkinson_factor * high_low_ratio**2)
-        annualized_vol_par = parkinson_vol * np.sqrt(self.annualizefactor)
-        return annualized_vol_par
+        log_hl_ratio = np.log(self.high / self.low)
+        squared_log_hl_ratio = log_hl_ratio**2
+        parkinson_constant = 1 / (4 * np.log(2))
+
+        # Rolling mean of the 'variance proxy' (squared log HL ratio)
+        daily_parkinson_variance_proxy = np.sqrt(parkinson_constant * squared_log_hl_ratio)
+        rolling_parkinson_vol_squared = daily_parkinson_variance_proxy.rolling(window = self.window).mean()
+        daily_parkinson_vol = np.sqrt(rolling_parkinson_vol_squared)
+        
+        # Annualize the daily parkinson vol
+        annualized_parkinson_vol = daily_parkinson_vol * np.sqrt(self.annualizefactor)
+
+        return annualized_parkinson_vol
 
 
 
