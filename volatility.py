@@ -1,21 +1,17 @@
 import pandas as pd
 import numpy as np
 import math
+from typing import Dict, Tuple, List, Optional
 
-class Volatility():
+class Volatility:
 
-    def __init__(self, ticker : str, open : pd.Series, close : pd.Series , high : pd.Series , low : pd.Series, window:int, annualizefactor:int):
+    def __init__(self, data: pd.DataFrame):
 
-        self.ticker = ticker
-        self.open = open
-        self.close = close
-        self.high = high
-        self.low = low
-        self.tradingdays = len(self.close)
-        self.window = window
-        self.annualizefactor = annualizefactor
+        self.data = data.copy()
+        self.volatility_metrics = {}
+        # self.signals = {} # Saving it for the future
     
-    def calculate_std_deviation(self):
+'''    def calculate_std_deviation(self):
         
         # Using log returns to apply the CLT for returns, since raw returns are left-skewed
         
@@ -54,4 +50,4 @@ class Volatility():
         
         annualized_garmanklaas_vol = daily_garmanklaas_vol * np.sqrt(self.annualizefactor)
 
-        return annualized_garmanklaas_vol
+        return annualized_garmanklaas_vol'''
