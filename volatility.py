@@ -15,7 +15,7 @@ class Volatility:
     def calculate_volatility_metrics(self, window: int = 30) -> Dict[str, pd.Series]:
 
         # Calculate log returns
-        self.data['log_returns'] = np.log(self.data['Close']/self.data['close'].shift(1))
+        self.data['log_returns'] = np.log(self.data['Close']/self.data['Close'].shift(1))
 
         # Calculate volatility (Yang-Zheng)
         self.volatility_metrics['Vol_YZ'] = self._yang_zheng_volatility(window)
