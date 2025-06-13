@@ -47,6 +47,18 @@ class Volatility:
 
         return daily_yang_zheng_vol, annualized_yang_zheng_vol
     
+    def _parkinson_volatility(self, window: int) -> pd.Series:
+
+        log_hl = np.log(self.data['High']/self.data['Low'])
+        squared_hl = log_hl**2
+        park_const = 1 / (4 * np.log(2))
+
+        daily_parkinson_vol = np.sqrt((park_const * squared_hl).rolling(window).mean())
+        annualized_parkinson_vol = daily_parkinson_vol * np.sqrt(252)
+        return daily_parkinson_vol, annualized_parkinson_vol
+
+
+    
     
 '''    def calculate_std_deviation(self):
         
@@ -56,22 +68,6 @@ class Volatility:
         daily_vol = logreturns.rolling(window=self.window).std()
         annualized_std = daily_vol * np.sqrt(self.annualizefactor)
         return annualized_std
-
-    def calculate_vol_parkinson(self):
-
-        log_hl_ratio = np.log(self.high / self.low)
-        squared_log_hl_ratio = log_hl_ratio**2
-        parkinson_constant = 1 / (4 * np.log(2))
-
-        # Rolling mean of the 'variance proxy' (squared log HL ratio)
-        daily_parkinson_variance_proxy = np.sqrt(parkinson_constant * squared_log_hl_ratio)
-        rolling_parkinson_vol_squared = daily_parkinson_variance_proxy.rolling(window = self.window).mean()
-        daily_parkinson_vol = np.sqrt(rolling_parkinson_vol_squared)
-        
-        # Annualize the daily parkinson vol
-        annualized_parkinson_vol = daily_parkinson_vol * np.sqrt(self.annualizefactor)
-
-        return annualized_parkinson_vol
 
     def calculate_vol_garmanklaas(self):
 
