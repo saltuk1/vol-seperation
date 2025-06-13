@@ -56,6 +56,18 @@ class Volatility:
         daily_parkinson_vol = np.sqrt((park_const * squared_hl).rolling(window).mean())
         annualized_parkinson_vol = daily_parkinson_vol * np.sqrt(252)
         return daily_parkinson_vol, annualized_parkinson_vol
+    
+    def _garman_klaas_volatility(self, window:int) -> pd.Series:
+
+        log_hl = np.log(self.data['High']/self.data['Low'])**2
+        log_co = np.log(self.data['Close']/self.data['Open'])**2
+
+        gk_const = 2*np.log(2) - 1
+
+        daily_garman_klaas_vol = np.sqrt((0.5 * log_hl - gk_const * log_co).rolling(window).mean())
+        annualized_garman_klaas_vol = daily_garman_klaas_vol * np.sqrt(252)
+
+        return daily_garman_klaas_vol, annualized_garman_klaas_vol
 
 
     
