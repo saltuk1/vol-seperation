@@ -21,10 +21,13 @@ class Volatility:
         self.volatility_metrics['Vol_YZ'] = self._yang_zheng_volatility(window)
 
         # Calculate volatility (Parkinson)
+        self.volatility_metrics['Vol_Parkinson'] = self._parkinson_volatility(window)
 
         # Calculate volatility (Garman-Klaas)
+        self.volatility_metrics['Vol_GK'] = self._garman_klaas_volatility(window)
 
         # Calculate volatility (Standard Deviation)
+        self.volatility_metrics['Vol_Std'] = self.data['log_returns'].rolling(window).std() * np.sqrt(252)
 
     def _yang_zheng_volatility(self, window: int) -> pd.Series:
 
@@ -45,7 +48,7 @@ class Volatility:
         daily_yang_zheng_vol = np.sqrt(opentoclose_var + k*closetoopen_var + (1- k)*roger_satchell_var)
         annualized_yang_zheng_vol = daily_yang_zheng_vol * np.sqrt(252)
 
-        return daily_yang_zheng_vol, annualized_yang_zheng_vol
+        return annualized_yang_zheng_vol
     
     def _parkinson_volatility(self, window: int) -> pd.Series:
 
@@ -55,7 +58,7 @@ class Volatility:
 
         daily_parkinson_vol = np.sqrt((park_const * squared_hl).rolling(window).mean())
         annualized_parkinson_vol = daily_parkinson_vol * np.sqrt(252)
-        return daily_parkinson_vol, annualized_parkinson_vol
+        return annualized_parkinson_vol
     
     def _garman_klaas_volatility(self, window:int) -> pd.Series:
 
@@ -67,32 +70,4 @@ class Volatility:
         daily_garman_klaas_vol = np.sqrt((0.5 * log_hl - gk_const * log_co).rolling(window).mean())
         annualized_garman_klaas_vol = daily_garman_klaas_vol * np.sqrt(252)
 
-        return daily_garman_klaas_vol, annualized_garman_klaas_vol
-
-
-    
-    
-'''    def calculate_std_deviation(self):
-        
-        # Using log returns to apply the CLT for returns, since raw returns are left-skewed
-        
-        logreturns = np.log(self.close / self.close.shift(1))
-        daily_vol = logreturns.rolling(window=self.window).std()
-        annualized_std = daily_vol * np.sqrt(self.annualizefactor)
-        return annualized_std
-
-    def calculate_vol_garmanklaas(self):
-
-        log_squared_oc_ratio = (np.log(self.close / self.open))**2
-        log_squared_hl_ratio = (np.log(self.high / self.low))**2
-        garmanklaas_constat = 2 * np.log(2) - 1
-
-        daily_garmanklaas_proxy = 0.5 * log_squared_hl_ratio - garmanklaas_constat * log_squared_oc_ratio
-        daily_garmanklaas_proxy = daily_garmanklaas_proxy.clip(lower=0) # Capped at 0 since variance can't be negative
-
-        rolling_garmanklaas_vol_squared = daily_garmanklaas_proxy.rolling(window = self.window).mean()
-        daily_garmanklaas_vol = np.sqrt(rolling_garmanklaas_vol_squared)
-        
-        annualized_garmanklaas_vol = daily_garmanklaas_vol * np.sqrt(self.annualizefactor)
-
-        return annualized_garmanklaas_vol'''
+        return annualized_garman_klaas_vol
